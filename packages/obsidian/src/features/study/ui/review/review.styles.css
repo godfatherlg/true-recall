@@ -41,6 +41,13 @@
 		text-align: center;
 	}
 
+	/* The type-in grading (verdict, comment, covered/missing) is selectable
+	   too, so a selection there gets the review's "Ask AI" button. */
+	.true-recall-type-in-assessment {
+		user-select: text;
+		-webkit-user-select: text;
+	}
+
 	/* Switch to left-align when content has block elements. The
 	   `is-block-content` class is set by LivePreviewField / PreviewCardBody
 	   when hasBlockMarkdown() detects fenced code, lists, tables, blockquote,

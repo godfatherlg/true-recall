@@ -1,5 +1,6 @@
 import { Menu } from "obsidian";
 
+import type { AssistantReviewAttemptContext } from "@true-recall/core/ai/assistant";
 import { findCardPolishPreset } from "@true-recall/core/ai/workflows/card-polish-builtins";
 import type { FSRSFlashcardItem } from "@true-recall/core/types";
 
@@ -14,22 +15,41 @@ import type TrueRecallPlugin from "../../main";
 import { type ChatContext, noteContext, shorten } from "./engine/chat-context";
 import { isAiChatAvailable, openAiChat } from "./open-ai-chat";
 
-/** Chat context for a card under review: the card and its source note. */
+/**
+ * Chat context for a card under review: the card, its source note and, after
+ * a typed answer, that attempt with its grading.
+ */
 export function cardChatContext(
 	plugin: TrueRecallPlugin,
 	card: Pick<FSRSFlashcardItem, "id" | "question" | "sourceNotePath">,
 	selectedText?: string,
+	reviewAttempt?: AssistantReviewAttemptContext,
 ): ChatContext {
 	const file = card.sourceNotePath
 		? plugin.app.vault.getFileByPath(card.sourceNotePath)
 		: null;
-	const note = noteContext(file);
+	return buildCardChatContext(
+		card,
+		noteContext(file),
+		selectedText,
+		reviewAttempt,
+	);
+}
+
+/** {@link cardChatContext} without the vault lookup. */
+export function buildCardChatContext(
+	card: Pick<FSRSFlashcardItem, "id" | "question">,
+	note: ChatContext["note"],
+	selectedText?: string,
+	reviewAttempt?: AssistantReviewAttemptContext,
+): ChatContext {
 	return {
 		card: { id: card.id, label: shorten(card.question ?? "", 60) },
 		...(note ? { note } : {}),
 		...(selectedText?.trim()
 			? { selection: { text: selectedText.trim(), notePath: note?.path } }
 			: {}),
+		...(reviewAttempt ? { reviewAttempt } : {}),
 	};
 }
 
@@ -57,14 +77,18 @@ export function factCheckCard(
 	});
 }
 
-/** A question typed after the answer, answered under the card. */
+/**
+ * A question typed after the answer, answered under the card. With a typed
+ * answer, the model also gets that attempt and its grading.
+ */
 export function askAboutCard(
 	plugin: TrueRecallPlugin,
 	card: FSRSFlashcardItem,
 	question: string,
+	reviewAttempt?: AssistantReviewAttemptContext,
 ): void {
 	void plugin.aiChat?.startForCard(card.id, {
-		context: cardChatContext(plugin, card),
+		context: cardChatContext(plugin, card, undefined, reviewAttempt),
 		message: question,
 	});
 }

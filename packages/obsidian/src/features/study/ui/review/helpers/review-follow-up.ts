@@ -1,4 +1,7 @@
-import type { AssistantContext } from "@true-recall/core/ai/assistant";
+import type {
+	AssistantContext,
+	AssistantReviewAttemptContext,
+} from "@true-recall/core/ai/assistant";
 import type { SemanticGradingResult } from "@true-recall/core/types";
 
 import {
@@ -19,7 +22,14 @@ export function buildReviewFollowUpContext(
 	attempt: ReviewFollowUpAttempt,
 ): AssistantContext {
 	const context = assistantContextFromCard(card);
-	context.reviewAttempt = {
+	context.reviewAttempt = toReviewAttemptContext(attempt);
+	return context;
+}
+
+function toReviewAttemptContext(
+	attempt: ReviewFollowUpAttempt,
+): AssistantReviewAttemptContext {
+	return {
 		typedAnswer: attempt.typedAnswer.trim(),
 		...(attempt.semanticResult
 			? {
@@ -31,5 +41,17 @@ export function buildReviewFollowUpContext(
 				}
 			: {}),
 	};
-	return context;
+}
+
+/**
+ * The attempt to hand the AI with a question about the visible card: only
+ * once the answer is revealed and something was typed, so a plain review
+ * (or a card not yet answered) carries no attempt.
+ */
+export function revealedReviewAttempt(
+	attempt: ReviewFollowUpAttempt,
+	isAnswerRevealed: boolean,
+): AssistantReviewAttemptContext | undefined {
+	if (!isAnswerRevealed || attempt.typedAnswer.trim() === "") return undefined;
+	return toReviewAttemptContext(attempt);
 }

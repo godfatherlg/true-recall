@@ -3,7 +3,10 @@ import { describe, expect, it } from "vitest";
 import type { SemanticGradingResult } from "@true-recall/core/types";
 
 import type { AssistantContextCard } from "../../../../../src/features/assistant/ui/ai-context-source";
-import { buildReviewFollowUpContext } from "../../../../../src/features/study/ui/review/helpers/review-follow-up";
+import {
+	buildReviewFollowUpContext,
+	revealedReviewAttempt,
+} from "../../../../../src/features/study/ui/review/helpers/review-follow-up";
 
 const CARD: AssistantContextCard = {
 	id: "card-1",
@@ -50,5 +53,35 @@ describe("buildReviewFollowUpContext", () => {
 		});
 
 		expect(context.reviewAttempt).toEqual({ typedAnswer: "guess" });
+	});
+});
+
+describe("revealedReviewAttempt", () => {
+	it("gives the typed answer and grading once the answer is revealed", () => {
+		expect(
+			revealedReviewAttempt(
+				{ typedAnswer: " a transport thing ", semanticResult: RESULT },
+				true,
+			),
+		).toEqual({
+			typedAnswer: "a transport thing",
+			verdict: "partial",
+			teacherComment: "Half right.",
+			covered: ["transport layer"],
+			missing: ["connection-oriented"],
+			errors: [],
+		});
+	});
+
+	it("gives nothing before the reveal or without a typed answer", () => {
+		expect(
+			revealedReviewAttempt(
+				{ typedAnswer: "guess", semanticResult: RESULT },
+				false,
+			),
+		).toBeUndefined();
+		expect(
+			revealedReviewAttempt({ typedAnswer: "   ", semanticResult: null }, true),
+		).toBeUndefined();
 	});
 });

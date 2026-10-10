@@ -4,6 +4,7 @@ export { hasBlockMarkdown } from "@true-recall/obsidian/features/study/ui/review
 export {
 	buildReviewFollowUpContext,
 	type ReviewFollowUpAttempt,
+	revealedReviewAttempt,
 } from "@true-recall/obsidian/features/study/ui/review/helpers/review-follow-up";
 export { getReviewMaxWidth } from "@true-recall/obsidian/features/study/ui/review/helpers/review-width";
 export {
