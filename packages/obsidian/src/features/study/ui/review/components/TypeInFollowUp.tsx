@@ -1,22 +1,28 @@
 import { useState } from "preact/hooks";
 
 import { Clickable } from "@true-recall/obsidian/components";
+import { followUpPlaceholder } from "@true-recall/obsidian/features/study/ui/review/helpers/review-follow-up";
 import { t } from "@true-recall/obsidian/i18n";
 
 interface TypeInFollowUpProps {
-	/** Queues the question; returns false when it could not be queued. */
+	/** Sends or queues the question; returns false when it could not. */
 	onSubmit: (question: string) => boolean;
+	/** True with the AI chat: the answer shows under the card right away. */
+	answeredUnderCard?: boolean;
 	queuedCount: number;
 	/** "Cards from gaps" next to the input; hidden when absent. */
 	onCardsFromGaps?: () => void;
 }
 
-/** One-shot capture input shown after a type-in answer is revealed. Questions
- * are queued to the AI inbox and answered after the session; deliberately not
- * a chat so the review flow keeps its momentum. Never autofocused, so rating
- * shortcuts keep working until the user clicks in. */
+/** One-shot question input shown after a type-in answer is revealed. With
+ * the AI chat (Pro) the answer appears under the card right away, with the
+ * typed answer and its grading as context; with the old assistant the
+ * question is queued to the AI inbox and answered after the session. A single
+ * line, not a chat, so the review keeps its momentum. Never autofocused, so
+ * rating shortcuts keep working until the user clicks in. */
 export function TypeInFollowUp({
 	onSubmit,
+	answeredUnderCard = false,
 	queuedCount,
 	onCardsFromGaps,
 }: TypeInFollowUpProps) {
@@ -34,7 +40,7 @@ export function TypeInFollowUp({
 				<input
 					type="text"
 					class="ep:w-full ep:min-w-0 ep:flex-1 ep:px-0 ep:py-1 ep:text-ui-small ep:text-obs-muted ep:text-center ep:bg-transparent ep:border-0 ep:border-b ep:border-obs-border ep:rounded-none ep:shadow-none ep:focus:border-obs-interactive ep:focus:shadow-none ep:transition-colors"
-					placeholder="Ask AI a follow-up… (answered after the session)"
+					placeholder={t(followUpPlaceholder(answeredUnderCard))}
 					value={value}
 					onInput={(e) => setValue((e.target as HTMLInputElement).value)}
 					onKeyDown={(e) => {

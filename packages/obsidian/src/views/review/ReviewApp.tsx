@@ -33,6 +33,8 @@ interface ReviewActions {
 	onAnswer: (rating: Grade) => void;
 	onTypedAnswerChange: (value: string) => void;
 	onAskFollowUp?: (question: string) => boolean;
+	/** The follow-up is answered under the card (AI chat), not queued. */
+	followUpAnsweredUnderCard?: boolean;
 	/** "Cards from gaps" next to the follow-up (AI chat only). */
 	onCardsFromGaps?: () => void;
 	onOpenAssistantInbox: () => void;
@@ -212,6 +214,7 @@ function ActiveReview({ card, review, model }: ActiveReviewProps) {
 					semanticResult: typeInState.semanticResult,
 					semanticMessage: typeInState.semanticMessage,
 					onAskFollowUp: actions.onAskFollowUp,
+					followUpAnsweredUnderCard: actions.followUpAnsweredUnderCard,
 					queuedFollowUpCount: cardAdapter.getQueuedFollowUpCount(),
 					onCardsFromGaps: actions.onCardsFromGaps,
 				}}

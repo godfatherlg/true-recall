@@ -589,6 +589,7 @@ export class ReviewView extends ItemView {
 							isPluginEnabled(this.plugin.settings, "ai-assistant")
 								? (question: string) => this.handleAskFollowUp(question)
 								: undefined,
+						followUpAnsweredUnderCard: this.usesAiChat,
 						// Pro chat only: the old assistant has no under-card run.
 						onCardsFromGaps: this.usesAiChat
 							? () => this.handleCardsFromGaps()

@@ -601,5 +601,7 @@
 	"Longest first interval after a new card graduates. Leave empty for no cap. FSRS still remembers the full stability.": "Longest first interval after a new card graduates. Leave empty for no cap. FSRS still remembers the full stability.",
 	"Cards from gaps": "Cards from gaps",
 	"New cards for what your answer missed, skipping points you already have cards for": "New cards for what your answer missed, skipping points you already have cards for",
-	"Already a card": "Already a card"
+	"Already a card": "Already a card",
+	"Ask AI about your answer…": "Ask AI about your answer…",
+	"Ask AI a follow-up… (answered after the session)": "Ask AI a follow-up… (answered after the session)"
 }

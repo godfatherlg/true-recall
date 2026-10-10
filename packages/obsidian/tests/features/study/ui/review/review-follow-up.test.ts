@@ -5,9 +5,12 @@ import type { SemanticGradingResult } from "@true-recall/core/types";
 import type { AssistantContextCard } from "../../../../../src/features/assistant/ui/ai-context-source";
 import {
 	buildReviewFollowUpContext,
+	followUpPlaceholder,
 	hasGradingGaps,
 	revealedReviewAttempt,
 } from "../../../../../src/features/study/ui/review/helpers/review-follow-up";
+import en from "../../../../../src/i18n/locales/en.json";
+import zhCN from "../../../../../src/i18n/locales/zh-CN.json";
 
 const CARD: AssistantContextCard = {
 	id: "card-1",
@@ -98,5 +101,24 @@ describe("hasGradingGaps", () => {
 		expect(hasGradingGaps({ missing: ["  "], errors: [""] })).toBe(false);
 		expect(hasGradingGaps(null)).toBe(false);
 		expect(hasGradingGaps(undefined)).toBe(false);
+	});
+});
+
+describe("followUpPlaceholder", () => {
+	it("says the AI chat answers about the typed answer right away", () => {
+		expect(followUpPlaceholder(true)).toBe("Ask AI about your answer…");
+	});
+
+	it("keeps the queued wording for the old assistant", () => {
+		expect(followUpPlaceholder(false)).toBe(
+			"Ask AI a follow-up… (answered after the session)",
+		);
+	});
+
+	it("returns keys present in both catalogs", () => {
+		const catalogs: Record<string, string>[] = [en, zhCN];
+		for (const key of [followUpPlaceholder(true), followUpPlaceholder(false)]) {
+			for (const catalog of catalogs) expect(catalog[key], key).toBeTruthy();
+		}
 	});
 });

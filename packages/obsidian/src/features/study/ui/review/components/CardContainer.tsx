@@ -126,6 +126,8 @@ interface TypeInState {
 	semanticResult: SemanticGradingResult | null;
 	semanticMessage: string | null;
 	onAskFollowUp?: (question: string) => boolean;
+	/** The follow-up is answered under the card (AI chat), not queued. */
+	followUpAnsweredUnderCard?: boolean;
 	queuedFollowUpCount: number;
 	/** Starts "Cards from gaps" (AI chat only); shown when the grading has gaps. */
 	onCardsFromGaps?: () => void;
@@ -166,6 +168,7 @@ export function CardContainer({
 		semanticResult,
 		semanticMessage,
 		onAskFollowUp,
+		followUpAnsweredUnderCard,
 		queuedFollowUpCount,
 		onCardsFromGaps,
 	} = typeIn;
@@ -358,6 +361,7 @@ export function CardContainer({
 				{showTypeIn && isAnswerRevealed && onAskFollowUp && (
 					<TypeInFollowUp
 						onSubmit={onAskFollowUp}
+						answeredUnderCard={followUpAnsweredUnderCard}
 						queuedCount={queuedFollowUpCount}
 						onCardsFromGaps={
 							hasGradingGaps(semanticResult) ? onCardsFromGaps : undefined

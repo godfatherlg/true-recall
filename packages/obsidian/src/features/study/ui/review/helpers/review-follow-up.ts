@@ -44,6 +44,17 @@ function toReviewAttemptContext(
 }
 
 /**
+ * Placeholder of the follow-up input after a typed answer. With the AI chat
+ * the answer appears right under the card; the old assistant queues the
+ * question and answers it after the session. Returns the i18n key.
+ */
+export function followUpPlaceholder(answeredUnderCard: boolean): string {
+	return answeredUnderCard
+		? "Ask AI about your answer…"
+		: "Ask AI a follow-up… (answered after the session)";
+}
+
+/**
  * "Cards from gaps" shows only when the grading names something the answer
  * missed or got wrong: those points are what the cards are made from.
  */
