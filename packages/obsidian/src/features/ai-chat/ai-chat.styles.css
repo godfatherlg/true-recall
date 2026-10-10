@@ -722,6 +722,27 @@
 	padding: 0 var(--size-4-2) var(--size-4-2);
 }
 
+/* A long proposal scrolls inside the panel: its Add / Apply / Skip row stays
+   pinned to the panel's bottom edge. overflow: clip (not hidden) so the proposal
+   is no scroll container and the sticky row follows the panel's scroll. The
+   hover tint is laid over the panel colour, so text scrolling under the row
+   does not show through. */
+.tr-card-assist .tr-ai-chat__proposal {
+	overflow: clip;
+}
+
+.tr-card-assist .tr-ai-chat__proposal-foot {
+	position: sticky;
+	bottom: 0;
+	z-index: 1;
+	background:
+		linear-gradient(
+			var(--background-modifier-hover),
+			var(--background-modifier-hover)
+		),
+		var(--background-secondary);
+}
+
 /* ─── generate_cards: progress, then cards sliding in ─────────────── */
 
 .tr-ai-chat__proposal-sub {
