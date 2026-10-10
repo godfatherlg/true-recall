@@ -598,5 +598,8 @@
 	"Show My Note field": "显示 My Note 字段",
 	"Show the My Note field in Add and Edit Flashcard. When off, press Cmd/Ctrl+K to open it. Cards that already have a note always show it.": "在添加和编辑卡片时显示 My Note 字段。关闭后可按 Cmd/Ctrl+K 打开。已有笔记的卡片始终显示该字段。",
 	"First interval cap (days)": "首次间隔上限（天）",
-	"Longest first interval after a new card graduates. Leave empty for no cap. FSRS still remembers the full stability.": "新卡片毕业后的最长首次间隔。留空表示不限制。FSRS 仍会保留完整的记忆稳定性。"
+	"Longest first interval after a new card graduates. Leave empty for no cap. FSRS still remembers the full stability.": "新卡片毕业后的最长首次间隔。留空表示不限制。FSRS 仍会保留完整的记忆稳定性。",
+	"Cards from gaps": "按漏答点生成卡片",
+	"New cards for what your answer missed, skipping points you already have cards for": "为你回答中遗漏的内容生成新卡片，已有卡片的要点会跳过",
+	"Already a card": "已有此卡片"
 }

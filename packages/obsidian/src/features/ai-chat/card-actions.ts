@@ -11,8 +11,10 @@ import {
 } from "@true-recall/obsidian/features/library/ui/panel/utils/card-polish.utils";
 import { showMenuForEvent } from "@true-recall/obsidian/utils/menu-position";
 
+import { t } from "../../i18n";
 import type TrueRecallPlugin from "../../main";
 import { type ChatContext, noteContext, shorten } from "./engine/chat-context";
+import { buildGapCardsRequest } from "./engine/gap-cards";
 import { isAiChatAvailable, openAiChat } from "./open-ai-chat";
 
 /**
@@ -90,6 +92,23 @@ export function askAboutCard(
 	void plugin.aiChat?.startForCard(card.id, {
 		context: cardChatContext(plugin, card, undefined, reviewAttempt),
 		message: question,
+	});
+}
+
+/**
+ * "Cards from gaps": new cards for what the typed answer missed or got wrong,
+ * under the card. A plain chat run (chat_task "chat"), so the model can call
+ * search_cards before proposing and may propose nothing.
+ */
+export function cardsFromGaps(
+	plugin: TrueRecallPlugin,
+	card: FSRSFlashcardItem,
+	reviewAttempt: AssistantReviewAttemptContext,
+): void {
+	void plugin.aiChat?.startForCard(card.id, {
+		context: cardChatContext(plugin, card, undefined, reviewAttempt),
+		message: buildGapCardsRequest(reviewAttempt),
+		title: t("Cards from gaps"),
 	});
 }
 

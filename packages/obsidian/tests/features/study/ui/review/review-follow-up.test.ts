@@ -5,6 +5,7 @@ import type { SemanticGradingResult } from "@true-recall/core/types";
 import type { AssistantContextCard } from "../../../../../src/features/assistant/ui/ai-context-source";
 import {
 	buildReviewFollowUpContext,
+	hasGradingGaps,
 	revealedReviewAttempt,
 } from "../../../../../src/features/study/ui/review/helpers/review-follow-up";
 
@@ -83,5 +84,19 @@ describe("revealedReviewAttempt", () => {
 		expect(
 			revealedReviewAttempt({ typedAnswer: "   ", semanticResult: null }, true),
 		).toBeUndefined();
+	});
+});
+
+describe("hasGradingGaps", () => {
+	it("shows Cards from gaps when something was missed or wrong", () => {
+		expect(hasGradingGaps(RESULT)).toBe(true);
+		expect(hasGradingGaps({ missing: [], errors: ["U = R"] })).toBe(true);
+	});
+
+	it("hides it without gaps or without a grading", () => {
+		expect(hasGradingGaps({ missing: [], errors: [] })).toBe(false);
+		expect(hasGradingGaps({ missing: ["  "], errors: [""] })).toBe(false);
+		expect(hasGradingGaps(null)).toBe(false);
+		expect(hasGradingGaps(undefined)).toBe(false);
 	});
 });

@@ -44,6 +44,22 @@ function toReviewAttemptContext(
 }
 
 /**
+ * "Cards from gaps" shows only when the grading names something the answer
+ * missed or got wrong: those points are what the cards are made from.
+ */
+export function hasGradingGaps(
+	result:
+		| { missing?: readonly string[]; errors?: readonly string[] }
+		| null
+		| undefined,
+): boolean {
+	if (!result) return false;
+	const nonEmpty = (points: readonly string[] | undefined) =>
+		(points ?? []).some((p) => p.trim() !== "");
+	return nonEmpty(result.missing) || nonEmpty(result.errors);
+}
+
+/**
  * The attempt to hand the AI with a question about the visible card: only
  * once the answer is revealed and something was typed, so a plain review
  * (or a card not yet answered) carries no attempt.

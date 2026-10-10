@@ -3,6 +3,7 @@ export { assessTypedAnswer } from "@true-recall/core/helpers/answer-assessment";
 export { hasBlockMarkdown } from "@true-recall/obsidian/features/study/ui/review/helpers/markdown-shape";
 export {
 	buildReviewFollowUpContext,
+	hasGradingGaps,
 	type ReviewFollowUpAttempt,
 	revealedReviewAttempt,
 } from "@true-recall/obsidian/features/study/ui/review/helpers/review-follow-up";

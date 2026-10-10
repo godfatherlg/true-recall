@@ -15,7 +15,10 @@ import { LivePreviewField } from "@true-recall/obsidian/features/study/ui/review
 import { TypeInAssessmentPanel } from "@true-recall/obsidian/features/study/ui/review/components/TypeInAssessmentPanel";
 import { TypeInCMEditor } from "@true-recall/obsidian/features/study/ui/review/components/TypeInCMEditor";
 import { TypeInFollowUp } from "@true-recall/obsidian/features/study/ui/review/components/TypeInFollowUp";
-import { getReviewMaxWidth } from "@true-recall/obsidian/features/study/ui/review/helpers";
+import {
+	getReviewMaxWidth,
+	hasGradingGaps,
+} from "@true-recall/obsidian/features/study/ui/review/helpers";
 import { locateClozeAnswer } from "@true-recall/obsidian/features/study/ui/review/helpers/cloze-answer-ranges";
 import { useNoteTypeCss } from "@true-recall/obsidian/features/study/ui/review/hooks/useNoteTypeCss";
 import { usePlugin } from "@true-recall/obsidian/preact/ObsidianContext";
@@ -124,6 +127,8 @@ interface TypeInState {
 	semanticMessage: string | null;
 	onAskFollowUp?: (question: string) => boolean;
 	queuedFollowUpCount: number;
+	/** Starts "Cards from gaps" (AI chat only); shown when the grading has gaps. */
+	onCardsFromGaps?: () => void;
 }
 
 interface CardContainerProps {
@@ -162,6 +167,7 @@ export function CardContainer({
 		semanticMessage,
 		onAskFollowUp,
 		queuedFollowUpCount,
+		onCardsFromGaps,
 	} = typeIn;
 	const answerPhase = useAnswerWarmup(isAnswerRevealed, card.id);
 	const sourcePath = card.sourceNotePath || "";
@@ -353,6 +359,9 @@ export function CardContainer({
 					<TypeInFollowUp
 						onSubmit={onAskFollowUp}
 						queuedCount={queuedFollowUpCount}
+						onCardsFromGaps={
+							hasGradingGaps(semanticResult) ? onCardsFromGaps : undefined
+						}
 					/>
 				)}
 

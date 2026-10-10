@@ -447,6 +447,13 @@
 	opacity: 0.45;
 }
 
+/* A proposed card whose question already exists: unchecked, labelled. */
+.tr-ai-chat__card-dup {
+	font-size: var(--font-ui-smaller);
+	color: var(--text-faint);
+	padding-top: var(--size-4-2);
+}
+
 .tr-ai-chat__card-body {
 	display: flex;
 	flex-direction: column;

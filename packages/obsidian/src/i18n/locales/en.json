@@ -598,5 +598,8 @@
 	"Show My Note field": "Show My Note field",
 	"Show the My Note field in Add and Edit Flashcard. When off, press Cmd/Ctrl+K to open it. Cards that already have a note always show it.": "Show the My Note field in Add and Edit Flashcard. When off, press Cmd/Ctrl+K to open it. Cards that already have a note always show it.",
 	"First interval cap (days)": "First interval cap (days)",
-	"Longest first interval after a new card graduates. Leave empty for no cap. FSRS still remembers the full stability.": "Longest first interval after a new card graduates. Leave empty for no cap. FSRS still remembers the full stability."
+	"Longest first interval after a new card graduates. Leave empty for no cap. FSRS still remembers the full stability.": "Longest first interval after a new card graduates. Leave empty for no cap. FSRS still remembers the full stability.",
+	"Cards from gaps": "Cards from gaps",
+	"New cards for what your answer missed, skipping points you already have cards for": "New cards for what your answer missed, skipping points you already have cards for",
+	"Already a card": "Already a card"
 }

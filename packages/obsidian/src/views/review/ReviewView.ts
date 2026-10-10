@@ -31,6 +31,7 @@ import { CommandService, ReviewUndoHook } from "@true-recall/obsidian/commands";
 import { G, getDataLayer } from "@true-recall/obsidian/data";
 import {
 	askAboutCard,
+	cardsFromGaps,
 	factCheckCard,
 	showCardAiMenu,
 } from "@true-recall/obsidian/features/ai-chat/card-actions";
@@ -53,6 +54,7 @@ import {
 import {
 	buildReviewFollowUpContext,
 	getTypeInModeStorage,
+	hasGradingGaps,
 	revealedReviewAttempt,
 } from "@true-recall/obsidian/features/study/ui/review/helpers";
 import { ReviewSelectionBubble } from "@true-recall/obsidian/features/study/ui/review/ReviewSelectionBubble";
@@ -331,6 +333,15 @@ export class ReviewView extends ItemView {
 		return true;
 	}
 
+	/** "Cards from gaps": cards for what the typed answer missed, under the card. */
+	private handleCardsFromGaps(): void {
+		const card = this.review.getCurrentCard();
+		if (!card || !this.usesAiChat) return;
+		const attempt = this.currentReviewAttempt(card.id);
+		if (!attempt || !hasGradingGaps(attempt)) return;
+		cardsFromGaps(this.plugin, card, attempt);
+	}
+
 	private handleAnswer(rating: Grade): void {
 		if (this.isProcessingAnswer) return;
 		if (this.typeIn.isRatingLocked()) return;
@@ -578,6 +589,10 @@ export class ReviewView extends ItemView {
 							isPluginEnabled(this.plugin.settings, "ai-assistant")
 								? (question: string) => this.handleAskFollowUp(question)
 								: undefined,
+						// Pro chat only: the old assistant has no under-card run.
+						onCardsFromGaps: this.usesAiChat
+							? () => this.handleCardsFromGaps()
+							: undefined,
 						onOpenAssistantInbox: () => void this.plugin.openAssistantInbox(),
 						onAnswer: (rating: Grade) => void this.handleAnswer(rating),
 						onContentChange: (value: string, field: "question" | "answer") =>
