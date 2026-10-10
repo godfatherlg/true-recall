@@ -16,7 +16,7 @@ import { TypeInAssessmentPanel } from "@true-recall/obsidian/features/study/ui/r
 import { TypeInCMEditor } from "@true-recall/obsidian/features/study/ui/review/components/TypeInCMEditor";
 import { TypeInFollowUp } from "@true-recall/obsidian/features/study/ui/review/components/TypeInFollowUp";
 import {
-	getReviewMaxWidth,
+	getCardColumnMaxWidth,
 	hasGradingGaps,
 } from "@true-recall/obsidian/features/study/ui/review/helpers";
 import { locateClozeAnswer } from "@true-recall/obsidian/features/study/ui/review/helpers/cloze-answer-ranges";
@@ -29,13 +29,6 @@ import { AudioPlayButton } from "./AudioPlayButton";
 import { CardCounters } from "./CardCounters";
 import { NoteReviewRenderer } from "./NoteReviewRenderer";
 import { IOCardRenderer } from "@true-recall/plugins/image-occlusion";
-
-const INK_EMBED_PATTERN =
-	/(?:!\[Ink(?:Drawing|Writing)\]|[?&]type=ink(?:Drawing|Writing)\b)/i;
-
-function hasInkEmbed(content: string | undefined): boolean {
-	return !!content && INK_EMBED_PATTERN.test(content);
-}
 
 function useAnswerWarmup(
 	isRevealed: boolean,
@@ -175,12 +168,7 @@ export function CardContainer({
 	const answerPhase = useAnswerWarmup(isAnswerRevealed, card.id);
 	const sourcePath = card.sourceNotePath || "";
 	const { reviewContentWidth } = usePlugin().settings;
-	const containsInkEmbed =
-		hasInkEmbed(card.question) || hasInkEmbed(card.answer);
-	const maxWidth =
-		isMobile() || containsInkEmbed
-			? "100%"
-			: getReviewMaxWidth(reviewContentWidth);
+	const maxWidth = getCardColumnMaxWidth(card, reviewContentWidth, isMobile());
 	const maxWidthStyle = `--tr-review-max-width: ${maxWidth}; max-width: ${maxWidth};`;
 
 	const questionContent = card.question;

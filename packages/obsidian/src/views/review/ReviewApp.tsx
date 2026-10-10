@@ -18,10 +18,16 @@ import {
 	SummaryScreen,
 	WaitingScreen,
 } from "@true-recall/obsidian/features/study/ui/review/components";
+import {
+	getCardColumnMaxWidth,
+	revealBelowDelta,
+} from "@true-recall/obsidian/features/study/ui/review/helpers";
 import type { TypeInMode } from "@true-recall/obsidian/features/study/ui/review/helpers/type-in-flow";
+import { usePlugin } from "@true-recall/obsidian/preact/ObsidianContext";
 import { useKeyboardInset } from "@true-recall/obsidian/preact/useKeyboardInset";
 import type { AppStore, ReviewApi } from "@true-recall/obsidian/store";
 import { cn } from "@true-recall/obsidian/utils/cn";
+import { isMobile } from "@true-recall/obsidian/utils/platform";
 
 // Re-export for consumers that import from this file
 export { ReviewEmptyState } from "@true-recall/obsidian/features/study/ui/review/components";
@@ -172,6 +178,7 @@ function ActiveReview({ card, review, model }: ActiveReviewProps) {
 	const typeInState = cardAdapter.getTypeInState(card, isAnswerRevealed);
 	const audioPath = cardAdapter.resolveAudioPath?.(card);
 	const isKeyboardOpen = useKeyboardInset();
+	const { reviewContentWidth } = usePlugin().settings;
 
 	useLayoutEffect(() => {
 		if (!hasAnswer && !review.isAnswerRevealed) {
@@ -221,7 +228,11 @@ function ActiveReview({ card, review, model }: ActiveReviewProps) {
 			/>
 
 			{actions.mountCardAssist ? (
-				<CardAssistSlot cardId={card.id} mount={actions.mountCardAssist} />
+				<CardAssistSlot
+					cardId={card.id}
+					mount={actions.mountCardAssist}
+					maxWidth={getCardColumnMaxWidth(card, reviewContentWidth, isMobile())}
+				/>
 			) : null}
 
 			<ReviewUserComment
@@ -251,18 +262,58 @@ function ActiveReview({ card, review, model }: ActiveReviewProps) {
 	);
 }
 
-/** Host for the AI chat's under-card panel (a React island). Empty until a run starts. */
+/** Host for the AI chat's under-card panel (a React island). Empty until a run
+ * starts. It takes the bottom of the view and the card scrolls above it; when
+ * it opens or grows, the card scrolls just enough to keep the type-in grading
+ * (the Missing list the run is about) in view, until the user scrolls. */
 function CardAssistSlot({
 	cardId,
 	mount,
+	maxWidth,
 }: {
 	cardId: string;
 	mount: (el: HTMLElement, cardId: string) => () => void;
+	maxWidth: string;
 }) {
 	const ref = useRef<HTMLDivElement>(null);
 	useEffect(() => {
 		if (!ref.current) return;
 		return mount(ref.current, cardId);
 	}, [cardId, mount]);
-	return <div ref={ref} class="tr-card-assist-slot" />;
+	// biome-ignore lint/correctness/useExhaustiveDependencies: re-attach per card, so a scroll on the previous card does not stop the next one's reveal
+	useEffect(() => {
+		const slot = ref.current;
+		const scroller = slot?.parentElement?.querySelector<HTMLElement>(
+			".true-recall-review-card-container",
+		);
+		if (!slot || !scroller) return;
+		let userScrolled = false;
+		const onUserScroll = () => {
+			userScrolled = true;
+		};
+		const keep = () => {
+			if (slot.childElementCount === 0 || slot.offsetHeight === 0) {
+				userScrolled = false;
+				return;
+			}
+			if (userScrolled) return;
+			const grading = scroller.querySelector(".true-recall-type-in-assessment");
+			if (!grading) return;
+			const delta = revealBelowDelta(
+				grading.getBoundingClientRect(),
+				scroller.getBoundingClientRect(),
+			);
+			if (delta > 0) scroller.scrollTop += delta;
+		};
+		const observer = new ResizeObserver(keep);
+		observer.observe(slot);
+		scroller.addEventListener("wheel", onUserScroll, { passive: true });
+		scroller.addEventListener("touchmove", onUserScroll, { passive: true });
+		return () => {
+			observer.disconnect();
+			scroller.removeEventListener("wheel", onUserScroll);
+			scroller.removeEventListener("touchmove", onUserScroll);
+		};
+	}, [cardId]);
+	return <div ref={ref} class="tr-card-assist-slot" style={{ maxWidth }} />;
 }

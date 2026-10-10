@@ -82,3 +82,16 @@ export function revealedReviewAttempt(
 	if (!isAnswerRevealed || attempt.typedAnswer.trim() === "") return undefined;
 	return toReviewAttemptContext(attempt);
 }
+
+/**
+ * How far to scroll the card down so the bottom of `target` (the type-in
+ * grading with its Missing list) sits above the under-card panel, which
+ * takes the bottom of the view. Only ever down: what the user reads above
+ * stays put, and a target already in view needs nothing.
+ */
+export function revealBelowDelta(
+	target: { bottom: number },
+	view: { bottom: number },
+): number {
+	return Math.max(0, Math.ceil(target.bottom - view.bottom));
+}

@@ -7,8 +7,10 @@ import {
 	buildReviewFollowUpContext,
 	followUpPlaceholder,
 	hasGradingGaps,
+	revealBelowDelta,
 	revealedReviewAttempt,
 } from "../../../../../src/features/study/ui/review/helpers/review-follow-up";
+import { getCardColumnMaxWidth } from "../../../../../src/features/study/ui/review/helpers/review-width";
 import en from "../../../../../src/i18n/locales/en.json";
 import zhCN from "../../../../../src/i18n/locales/zh-CN.json";
 
@@ -120,5 +122,36 @@ describe("followUpPlaceholder", () => {
 		for (const key of [followUpPlaceholder(true), followUpPlaceholder(false)]) {
 			for (const catalog of catalogs) expect(catalog[key], key).toBeTruthy();
 		}
+	});
+});
+
+describe("revealBelowDelta", () => {
+	it("scrolls down by how much the grading ends below the card area", () => {
+		expect(revealBelowDelta({ bottom: 520.2 }, { bottom: 400 })).toBe(121);
+	});
+
+	it("never scrolls when the grading is already in view, or up", () => {
+		expect(revealBelowDelta({ bottom: 400 }, { bottom: 400 })).toBe(0);
+		expect(revealBelowDelta({ bottom: 120 }, { bottom: 400 })).toBe(0);
+	});
+});
+
+describe("getCardColumnMaxWidth", () => {
+	const card = { question: "Q", answer: "A" };
+
+	it("follows the review width setting on desktop", () => {
+		expect(getCardColumnMaxWidth(card, "default", false)).toBe("48rem");
+		expect(getCardColumnMaxWidth(card, "wide", false)).toBe("64rem");
+	});
+
+	it("is the full width on phones and for handwriting embeds", () => {
+		expect(getCardColumnMaxWidth(card, "default", true)).toBe("100%");
+		expect(
+			getCardColumnMaxWidth(
+				{ question: "![InkDrawing](x.svg)", answer: "A" },
+				"narrow",
+				false,
+			),
+		).toBe("100%");
 	});
 });

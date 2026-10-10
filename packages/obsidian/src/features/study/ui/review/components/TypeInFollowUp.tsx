@@ -1,8 +1,8 @@
 import { useState } from "preact/hooks";
 
-import { Clickable } from "@true-recall/obsidian/components";
 import { followUpPlaceholder } from "@true-recall/obsidian/features/study/ui/review/helpers/review-follow-up";
 import { t } from "@true-recall/obsidian/i18n";
+import { useIcon } from "@true-recall/obsidian/preact/hooks";
 
 interface TypeInFollowUpProps {
 	/** Sends or queues the question; returns false when it could not. */
@@ -35,11 +35,11 @@ export function TypeInFollowUp({
 	};
 
 	return (
-		<div class="ep:w-full ep:max-w-md ep:mx-auto ep:mt-6 ep:flex ep:flex-col ep:gap-1.5">
-			<div class="ep:flex ep:items-center ep:gap-3">
+		<div class="true-recall-follow-up ep:mt-6 ep:flex ep:flex-col ep:gap-1.5">
+			<div class="true-recall-follow-up__row">
 				<input
 					type="text"
-					class="ep:w-full ep:min-w-0 ep:flex-1 ep:px-0 ep:py-1 ep:text-ui-small ep:text-obs-muted ep:text-center ep:bg-transparent ep:border-0 ep:border-b ep:border-obs-border ep:rounded-none ep:shadow-none ep:focus:border-obs-interactive ep:focus:shadow-none ep:transition-colors"
+					class="true-recall-follow-up__input"
 					placeholder={t(followUpPlaceholder(answeredUnderCard))}
 					value={value}
 					onInput={(e) => setValue((e.target as HTMLInputElement).value)}
@@ -54,27 +54,42 @@ export function TypeInFollowUp({
 						}
 					}}
 				/>
-				{onCardsFromGaps && (
-					<Clickable
-						class="true-recall-gap-cards ep:shrink-0 ep:whitespace-nowrap ep:py-1 ep:text-ui-small ep:text-obs-muted ep:hover:text-obs-normal ep:transition-colors"
-						aria-label={t(
-							"New cards for what your answer missed, skipping points you already have cards for",
-						)}
-						onClick={(e) => {
-							// Blur so Enter and the rating keys go back to the review.
-							(e.currentTarget as HTMLElement | null)?.blur();
-							onCardsFromGaps();
-						}}
-					>
-						{t("Cards from gaps")}
-					</Clickable>
-				)}
+				{onCardsFromGaps && <CardsFromGapsButton onClick={onCardsFromGaps} />}
 			</div>
 			{queuedCount > 0 && (
-				<span class="ep:text-ui-smaller ep:text-obs-faint ep:text-center">
+				<span class="ep:text-ui-smaller ep:text-obs-faint">
 					{queuedCount} queued · waiting in the AI Inbox
 				</span>
 			)}
 		</div>
+	);
+}
+
+/** Secondary button beside the input, same height. Icon only when the
+ * column is narrow (container query in review.styles.css). */
+function CardsFromGapsButton({ onClick }: { onClick: () => void }) {
+	const iconRef = useIcon("layers-plus");
+	const hint = t(
+		"New cards for what your answer missed, skipping points you already have cards for",
+	);
+	return (
+		<button
+			type="button"
+			class="true-recall-gap-cards"
+			aria-label={hint}
+			data-tooltip-position="top"
+			onClick={(e) => {
+				// Blur so Enter and the rating keys go back to the review.
+				e.currentTarget.blur();
+				onClick();
+			}}
+		>
+			<span
+				ref={iconRef}
+				class="true-recall-gap-cards__icon"
+				aria-hidden="true"
+			/>
+			<span class="true-recall-gap-cards__label">{t("Cards from gaps")}</span>
+		</button>
 	);
 }
