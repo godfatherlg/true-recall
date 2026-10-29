@@ -112,6 +112,8 @@ export interface ReviewSliceActions {
 	) => void;
 	updateCurrentCardComment: (userComment: string | undefined) => void;
 	updateCurrentCardFlag: (flag: CardFlag) => void;
+	/** Sync "always type-in" on every queued card of a note after an edit. */
+	updateNoteAlwaysTypeIn: (noteId: string, enabled: boolean) => void;
 
 	// Scheduling preview (ephemeral)
 	getSchedulingPreview: () => SchedulingPreview | null;

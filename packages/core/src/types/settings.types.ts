@@ -288,6 +288,9 @@ export interface TrueRecallSettings {
 	reviewContentWidth: ReviewContentWidth;
 	/** Show predicted time on answer buttons */
 	showNextReviewTime: boolean;
+	/** On phones and tablets, show the predicted intervals in a row above the
+	 * answer buttons (off by default: the extra row takes space at the bottom) */
+	showNextReviewTimeMobile: boolean;
 	/** Suspend a card and study it through easier child cards instead */
 	childCardsEnabled: boolean;
 	/** Consecutive Good/Easy ratings before a child card graduates */

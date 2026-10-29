@@ -1,4 +1,5 @@
 import type { QuickNoteEditorMode } from "../types";
+import { initialAlwaysTypeIn } from "./quick-note-validation";
 
 export interface QuickNoteState {
 	noteTypeId: string;
@@ -55,7 +56,7 @@ export function createQuickNoteState(
 		fields,
 		userComment: mode.mode === "edit" ? (mode.note.userComment ?? "") : "",
 		pinnedFields: new Set(),
-		alwaysTypeIn: false,
+		alwaysTypeIn: initialAlwaysTypeIn(mode),
 		focusFirstRequest: 0,
 	};
 }

@@ -173,6 +173,7 @@ export const DEFAULT_SETTINGS: TrueRecallSettings = {
 	reviewMode: "fullscreen",
 	reviewContentWidth: "default",
 	showNextReviewTime: true,
+	showNextReviewTimeMobile: false,
 	childCardsEnabled: false,
 	childGoodStreak: 2,
 	childHardStreak: 4,
